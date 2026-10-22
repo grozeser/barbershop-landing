@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="pole"><rect x="10" y="4" width="12" height="24" rx="6" /></clipPath>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#0f0f0f" />
+  <g clip-path="url(#pole)">
+    <rect x="10" y="4" width="12" height="24" fill="#f2ede4" />
+    <path d="M10 10 22 2v5L10 15zM10 20l12-8v5L10 25zM10 30l12-8v5L10 35z" fill="#8b2e2e" />
+  </g>
+</svg>
