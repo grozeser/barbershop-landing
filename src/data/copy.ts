@@ -45,6 +45,14 @@ export const header = {
   closeMenu: 'Закрыть меню',
 };
 
+export const gallery = {
+  open: 'Открыть фото',
+  dialog: 'Просмотр работ',
+  prev: 'Предыдущее фото',
+  next: 'Следующее фото',
+  close: 'Закрыть',
+};
+
 export const contacts = {
   address: 'Адрес',
   hours: 'Часы работы',
@@ -90,7 +98,7 @@ export const booking = {
   success: {
     title: 'Вы записаны',
     note: `Ждём по адресу ${site.address}. Если планы изменятся, просто позвоните.`,
-    calendar: 'Добавить в календарь',
+    anyMaster: 'любой свободный мастер',
     again: 'Записаться ещё раз',
   },
 };

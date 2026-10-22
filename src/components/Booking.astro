@@ -1,12 +1,16 @@
 ---
 import Button from './ui/Button.astro';
+import Field from './ui/Field.astro';
 import Section from './ui/Section.astro';
 import { booking, sections } from '../data/copy';
+import { masters } from '../data/masters';
+import { serviceGroups } from '../data/services';
 import { site } from '../data/site';
+import { formatPrice } from '../lib/format';
 ---
 
 <Section id="booking" {...sections.booking} class="bg-surface">
-  <div class="grid gap-8 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+  <div class="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
     <div>
       <h3 class="font-display text-2xl font-medium uppercase">{booking.phoneTitle}</h3>
       <p class="mt-3 text-muted">{booking.phoneText}</p>
@@ -19,12 +23,302 @@ import { site } from '../data/site';
       <p class="mt-2 text-sm text-muted">{site.hours.label}</p>
     </div>
 
-    <!-- Форма записи появится на этапе 4 вместе с логикой, валидацией и тестами -->
-    <div class="flex flex-col items-start gap-6 border border-line bg-bg p-6 md:p-10">
-      <p class="text-lg">Онлайн-запись появится здесь совсем скоро.</p>
-      <Button href={site.phoneHref} variant="ghost">
-        Позвонить
-      </Button>
+    <div class="border border-line bg-bg p-6 md:p-10">
+      <!-- У личных полей нет name: даже без JS браузер не отправит их в адрес страницы -->
+      <form id="booking-form" novalidate class="grid gap-8 md:grid-cols-2">
+        <Field label={booking.labels.service} for="service" class="md:col-span-2">
+          <select id="service" required aria-describedby="service-error" class="field-control">
+            <option value="" disabled selected>
+              {booking.placeholders.service}
+            </option>
+            {serviceGroups.map((group) => (
+              <optgroup label={group.title}>
+                {group.items.map((service) => (
+                  <option value={service.id}>
+                    {service.name} — {formatPrice(service.price)}, {service.duration} мин
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </Field>
+
+        <fieldset class="md:col-span-2">
+          <legend class="mb-2 text-sm font-medium">{booking.labels.master}</legend>
+          <div class="flex flex-wrap gap-2">
+            <label class="chip">
+              <input type="radio" name="master" value="any" checked class="sr-only" />
+              {booking.anyMaster}
+            </label>
+            {masters.map((master) => (
+              <label class="chip">
+                <input type="radio" name="master" value={master.id} class="sr-only" />
+                {master.name}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <Field label={booking.labels.date} for="date" class="md:col-span-2">
+          <input
+            id="date"
+            type="date"
+            required
+            aria-describedby="date-error"
+            class="field-control md:max-w-xs"
+          />
+        </Field>
+
+        <fieldset id="time" aria-describedby="time-hint time-error" class="md:col-span-2">
+          <legend class="mb-2 text-sm font-medium">{booking.labels.time}</legend>
+          <p id="time-hint" class="text-sm text-muted empty:hidden">
+            {booking.timeHint}
+          </p>
+          <div
+            id="time-slots"
+            class="grid grid-cols-[repeat(auto-fill,minmax(5.5rem,1fr))] gap-2"
+          ></div>
+          <p id="time-error" class="mt-2 text-sm text-error empty:hidden"></p>
+        </fieldset>
+
+        <Field label={booking.labels.name} for="name">
+          <input
+            id="name"
+            type="text"
+            required
+            autocomplete="given-name"
+            placeholder={booking.placeholders.name}
+            aria-describedby="name-error"
+            class="field-control"
+          />
+        </Field>
+
+        <Field label={booking.labels.phone} for="phone">
+          <input
+            id="phone"
+            type="tel"
+            required
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder={booking.placeholders.phone}
+            aria-describedby="phone-error"
+            class="field-control"
+          />
+        </Field>
+
+        <Field
+          label={booking.labels.comment}
+          for="comment"
+          note={booking.optional}
+          class="md:col-span-2"
+        >
+          <textarea
+            id="comment"
+            rows="3"
+            placeholder={booking.placeholders.comment}
+            class="field-control resize-y"
+          ></textarea>
+        </Field>
+
+        <div class="md:col-span-2">
+          <label class="flex cursor-pointer items-start gap-3">
+            <input
+              id="consent"
+              type="checkbox"
+              required
+              aria-describedby="consent-error"
+              class="mt-0.5 size-5 shrink-0 accent-accent"
+            />
+            <span class="text-sm">{booking.labels.consent}</span>
+          </label>
+          <p id="consent-error" class="mt-2 text-sm text-error empty:hidden"></p>
+        </div>
+
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center md:col-span-2">
+          <Button type="submit">{booking.submit}</Button>
+          <p class="text-sm text-muted">{booking.demoNote}</p>
+        </div>
+      </form>
+
+      <div id="booking-success" hidden tabindex="-1" class="outline-none">
+        <p class="eyebrow">{booking.success.title}</p>
+        <p id="booking-summary" class="mt-4 font-display text-3xl font-medium uppercase"></p>
+        <p class="mt-4 text-muted">{booking.success.note}</p>
+        <Button id="booking-again" variant="ghost" class="mt-8">
+          {booking.success.again}
+        </Button>
+      </div>
     </div>
   </div>
 </Section>
+
+<script>
+  import { booking } from '../data/copy';
+  import { masters } from '../data/masters';
+  import { services } from '../data/services';
+  import { site } from '../data/site';
+  import { dateRange, formatPhoneInput, getSlots, validate, type FieldKey } from '../lib/booking';
+  import { formatDate } from '../lib/format';
+
+  const byId = <T extends HTMLElement = HTMLElement>(id: string) =>
+    document.getElementById(id) as T;
+  const form = byId<HTMLFormElement>('booking-form');
+  const success = byId('booking-success');
+  const service = byId<HTMLSelectElement>('service');
+  const date = byId<HTMLInputElement>('date');
+  const timeHint = byId('time-hint');
+  const slotsBox = byId('time-slots');
+  const name = byId<HTMLInputElement>('name');
+  const phone = byId<HTMLInputElement>('phone');
+  const consent = byId<HTMLInputElement>('consent');
+
+  Object.assign(date, dateRange(new Date()));
+
+  const checked = (group: string) =>
+    form.querySelector<HTMLInputElement>(`input[name="${group}"]:checked`)?.value ?? '';
+
+  const fields = () => ({
+    service: service.value,
+    date: date.value,
+    time: checked('time'),
+    name: name.value,
+    phone: phone.value,
+    consent: consent.checked,
+  });
+
+  function renderSlots() {
+    const selected = services.find((s) => s.id === service.value);
+    const previous = checked('time');
+    slotsBox.replaceChildren();
+    if (!selected || !date.value) {
+      timeHint.textContent = booking.timeHint;
+      return;
+    }
+    const master = checked('master');
+    const slots = getSlots({
+      date: date.value,
+      duration: selected.duration,
+      masterIds: master === 'any' ? masters.map((m) => m.id) : [master],
+      now: new Date(),
+      open: site.hours.open,
+      close: site.hours.close,
+    });
+    timeHint.textContent = slots.some((s) => !s.busy) ? '' : booking.noSlots;
+    for (const slot of slots) {
+      const input = Object.assign(document.createElement('input'), {
+        type: 'radio',
+        name: 'time',
+        value: slot.time,
+        className: 'sr-only',
+        disabled: slot.busy,
+        checked: slot.time === previous && !slot.busy,
+      });
+      const label = document.createElement('label');
+      label.className = 'chip';
+      label.append(input, slot.time);
+      slotsBox.append(label);
+    }
+  }
+
+  const inputs: Record<FieldKey, HTMLElement> = {
+    service,
+    date,
+    time: byId('time'),
+    name,
+    phone,
+    consent,
+  };
+
+  function showErrors(errors: FieldKey[]) {
+    for (const key of Object.keys(inputs) as FieldKey[]) {
+      const invalid = errors.includes(key);
+      if (key !== 'time') inputs[key].setAttribute('aria-invalid', String(invalid));
+      byId(`${key}-error`).textContent = invalid ? booking.errors[key] : '';
+    }
+  }
+
+  function focusField(key: FieldKey) {
+    if (key !== 'time') return inputs[key].focus();
+    const firstFree = slotsBox.querySelector<HTMLInputElement>('input:not(:disabled)');
+    (firstFree ?? (date.value ? service : date)).focus();
+  }
+
+  let submitted = false;
+
+  form.addEventListener('change', (event) => {
+    const target = event.target as Element;
+    if (target === service || target === date || target.getAttribute('name') === 'master') {
+      renderSlots();
+    }
+    if (submitted) showErrors(validate(fields(), new Date()));
+  });
+  form.addEventListener('input', () => {
+    if (submitted) showErrors(validate(fields(), new Date()));
+  });
+
+  let phoneDigits = '';
+  phone.addEventListener('input', (event) => {
+    let value = phone.value;
+    // стёрли скобку или дефис — цифры не изменились, и маска вернула бы символ; стираем цифру перед ним
+    if (
+      (event as InputEvent).inputType === 'deleteContentBackward' &&
+      value.replace(/\D/g, '') === phoneDigits
+    ) {
+      value = value.replace(/\d(?=\D*$)/, '');
+    }
+    phone.value = formatPhoneInput(value);
+    phoneDigits = phone.value.replace(/\D/g, '');
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    submitted = true;
+    const now = new Date();
+    const values = fields();
+    const errors = validate(values, now);
+    showErrors(errors);
+    if (errors.length) return focusField(errors[0]);
+
+    const selected = services.find((s) => s.id === values.service);
+    const master = masters.find((m) => m.id === checked('master'));
+    byId('booking-summary').textContent = [
+      selected?.name,
+      master?.name ?? booking.success.anyMaster,
+      `${formatDate(values.date)} в ${values.time}`,
+    ].join(', ');
+    form.hidden = true;
+    success.hidden = false;
+    success.focus();
+  });
+
+  function resetForm() {
+    form.reset();
+    phoneDigits = '';
+    submitted = false;
+    showErrors([]);
+    renderSlots();
+    success.hidden = true;
+    form.hidden = false;
+  }
+
+  byId('booking-again').addEventListener('click', () => {
+    resetForm();
+    service.focus();
+  });
+
+  // «Записаться» у услуги или мастера: переходим к форме с уже выбранным значением
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element).closest<HTMLElement>('[data-service], [data-master]');
+    if (!link) return;
+    if (!success.hidden) resetForm();
+    const { service: serviceId, master: masterId } = link.dataset;
+    if (serviceId) service.value = serviceId;
+    if (masterId) {
+      const radio = form.querySelector<HTMLInputElement>(
+        `input[name="master"][value="${CSS.escape(masterId)}"]`,
+      );
+      if (radio) radio.checked = true;
+    }
+    renderSlots();
+  });
+</script>

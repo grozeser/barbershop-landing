@@ -1,0 +1,27 @@
+---
+// Подпись, поле (slot), подсказка и место для ошибки. У поля в slot нужен
+// aria-describedby="{for}-hint {for}-error" — скрипт формы пишет текст ошибки в {for}-error
+interface Props {
+  label: string;
+  for: string;
+  hint?: string;
+  note?: string;
+  class?: string;
+}
+
+const { label, for: id, hint, note, class: className } = Astro.props;
+---
+
+<div class:list={['flex flex-col gap-2', className]}>
+  <label for={id} class="text-sm font-medium">
+    {label}
+    {note && <span class="font-normal text-muted"> · {note}</span>}
+  </label>
+  <slot />
+  {hint && (
+    <p id={`${id}-hint`} class="text-sm text-muted">
+      {hint}
+    </p>
+  )}
+  <p id={`${id}-error`} class="text-sm text-error empty:hidden"></p>
+</div>

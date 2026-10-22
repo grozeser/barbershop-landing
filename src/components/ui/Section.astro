@@ -16,7 +16,7 @@ const { id, eyebrow, title, lead, class: className } = Astro.props;
   class:list={['scroll-mt-20 py-20 md:py-28', className]}
 >
   <div class="mx-auto max-w-page px-4 md:px-6">
-    <header class="mb-12 max-w-2xl md:mb-16">
+    <header data-reveal class="mb-12 max-w-2xl md:mb-16">
       <p class="eyebrow">{eyebrow}</p>
       <h2
         id={`${id}-title`}
@@ -26,6 +26,8 @@ const { id, eyebrow, title, lead, class: className } = Astro.props;
       </h2>
       {lead && <p class="mt-4 text-lg text-muted">{lead}</p>}
     </header>
-    <slot />
+    <div data-reveal>
+      <slot />
+    </div>
   </div>
 </section>

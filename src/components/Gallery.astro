@@ -1,7 +1,7 @@
 ---
 import Photo from './ui/Photo.astro';
 import Section from './ui/Section.astro';
-import { sections } from '../data/copy';
+import { gallery, sections } from '../data/copy';
 import { works } from '../data/works';
 ---
 
@@ -9,8 +9,75 @@ import { works } from '../data/works';
   <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
     {works.map((work) => (
       <li>
-        <Photo alt={work.alt} class="aspect-[4/5]" />
+        <button
+          type="button"
+          data-lightbox
+          aria-label={`${gallery.open}: ${work.alt}`}
+          class="block w-full cursor-zoom-in transition-opacity duration-200 hover:opacity-80"
+        >
+          <Photo alt={work.alt} class="aspect-[4/5]" />
+        </button>
       </li>
     ))}
   </ul>
 </Section>
+
+<dialog
+  id="lightbox"
+  aria-label={gallery.dialog}
+  class="m-auto max-h-none max-w-none bg-transparent p-0 text-fg backdrop:bg-black/90"
+>
+  <div class="flex flex-col items-center gap-4 p-4">
+    <div id="lightbox-photo" class="w-[min(90vw,calc(75dvh*0.8))]"></div>
+    <p id="lightbox-caption" class="text-center text-sm text-muted"></p>
+    <div class="flex gap-2">
+      <button type="button" data-step="-1" aria-label={gallery.prev} class="chip w-12">
+        ←
+      </button>
+      <button type="button" data-step="1" aria-label={gallery.next} class="chip w-12">
+        →
+      </button>
+      <button type="button" data-close aria-label={gallery.close} class="chip w-12">
+        ✕
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement;
+  const photoBox = document.getElementById('lightbox-photo')!;
+  const caption = document.getElementById('lightbox-caption')!;
+  const triggers = [...document.querySelectorAll<HTMLButtonElement>('[data-lightbox]')];
+  let current = 0;
+
+  function show(index: number) {
+    current = (index + triggers.length) % triggers.length;
+    const photo = triggers[current].firstElementChild!.cloneNode(true) as HTMLElement;
+    photoBox.replaceChildren(photo);
+    caption.textContent = `${current + 1} / ${triggers.length} · ${photo.getAttribute('aria-label') ?? ''}`;
+  }
+
+  triggers.forEach((trigger, index) =>
+    trigger.addEventListener('click', () => {
+      show(index);
+      dialog.showModal();
+    }),
+  );
+
+  dialog.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    const step = target.closest<HTMLElement>('[data-step]')?.dataset.step;
+    if (step) show(current + Number(step));
+    // клик по затемнению попадает в сам dialog
+    else if (target === dialog || target.closest('[data-close]')) dialog.close();
+  });
+
+  dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') show(current - 1);
+    if (event.key === 'ArrowRight') show(current + 1);
+  });
+
+  // после закрытия фокус возвращается на фото, с которого открыли
+  dialog.addEventListener('close', () => triggers[current].focus());
+</script>
