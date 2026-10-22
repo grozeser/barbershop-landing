@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = Omit<HTMLAttributes<'button'>, 'type'> & {
+  href?: string;
+  variant?: 'primary' | 'ghost';
+  type?: 'button' | 'submit';
+};
+
+const { href, variant = 'primary', type = 'button', class: className, ...rest } = Astro.props;
+
+const classes = [
+  'inline-flex min-h-12 items-center justify-center gap-2 px-7 font-display text-sm font-medium tracking-[0.15em] uppercase transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50',
+  variant === 'primary'
+    ? 'bg-accent text-bg hover:bg-accent-soft'
+    : 'border border-accent/60 text-fg hover:border-accent hover:text-accent',
+  className,
+];
+---
+
+{href ? (
+  <a href={href} class:list={classes} {...rest}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class:list={classes} {...rest}>
+    <slot />
+  </button>
+)}
