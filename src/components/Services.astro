@@ -1,0 +1,41 @@
+---
+import Section from './ui/Section.astro';
+import { ctaLabel, sections } from '../data/copy';
+import { serviceGroups } from '../data/services';
+import { formatPrice } from '../lib/format';
+---
+
+<Section id="services" {...sections.services} class="bg-surface">
+  <div class="grid gap-x-16 gap-y-12 lg:grid-cols-2">
+    {serviceGroups.map((group) => (
+      <div>
+        <h3 class="font-display text-2xl font-medium uppercase">{group.title}</h3>
+        <ul class="mt-6 divide-y divide-line border-y border-line">
+          {group.items.map((service) => (
+            <li class="flex items-start justify-between gap-6 py-5">
+              <div>
+                <p class="text-lg font-medium">{service.name}</p>
+                <p class="mt-1 text-sm text-muted">
+                  {service.description} · {service.duration}&nbsp;мин
+                </p>
+              </div>
+              <div class="flex shrink-0 flex-col items-end gap-1">
+                <p class="font-display text-xl font-medium text-accent">
+                  {formatPrice(service.price)}
+                </p>
+                <a
+                  href="#booking"
+                  data-service={service.id}
+                  aria-label={`${ctaLabel}: ${service.name}`}
+                  class="-my-1 inline-block py-1.5 text-sm text-muted underline underline-offset-4 transition-colors hover:text-fg"
+                >
+                  {ctaLabel}
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</Section>

@@ -1,0 +1,19 @@
+---
+import Section from './ui/Section.astro';
+import { sections } from '../data/copy';
+import { site } from '../data/site';
+---
+
+<Section id="features" {...sections.features}>
+  <ol class="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+    {site.features.map((feature, index) => (
+      <li class="bg-bg p-6 md:p-8">
+        <p aria-hidden="true" class="font-display text-4xl font-semibold text-accent">
+          {String(index + 1).padStart(2, '0')}
+        </p>
+        <h3 class="mt-6 font-display text-xl font-medium uppercase">{feature.title}</h3>
+        <p class="mt-3 text-muted">{feature.text}</p>
+      </li>
+    ))}
+  </ol>
+</Section>

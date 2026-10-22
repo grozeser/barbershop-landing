@@ -1,0 +1,16 @@
+---
+import Photo from './ui/Photo.astro';
+import Section from './ui/Section.astro';
+import { sections } from '../data/copy';
+import { works } from '../data/works';
+---
+
+<Section id="works" {...sections.works} class="bg-surface">
+  <ul class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+    {works.map((work) => (
+      <li>
+        <Photo alt={work.alt} class="aspect-[4/5]" />
+      </li>
+    ))}
+  </ul>
+</Section>

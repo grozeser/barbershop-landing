@@ -1,0 +1,10 @@
+---
+import Button from './ui/Button.astro';
+import { ctaLabel } from '../data/copy';
+---
+
+<div class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-bg/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
+  <Button href="#booking" class="w-full">
+    {ctaLabel}
+  </Button>
+</div>

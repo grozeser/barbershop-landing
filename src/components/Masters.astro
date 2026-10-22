@@ -1,0 +1,30 @@
+---
+import Badge from './ui/Badge.astro';
+import Button from './ui/Button.astro';
+import Photo from './ui/Photo.astro';
+import Section from './ui/Section.astro';
+import { ctaLabel, sections } from '../data/copy';
+import { masters } from '../data/masters';
+---
+
+<Section id="masters" {...sections.masters}>
+  <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    {masters.map((master) => (
+      <li class="flex flex-col border border-line bg-surface">
+        <Photo
+          alt={`${master.name}, ${master.level.toLowerCase()}`}
+          class="aspect-[4/3] sm:aspect-[4/5]"
+        />
+        <div class="flex flex-1 flex-col p-6">
+          <Badge class="self-start">{master.level}</Badge>
+          <h3 class="mt-4 font-display text-2xl font-medium uppercase">{master.name}</h3>
+          <p class="mt-1 text-sm text-muted">Стаж {master.experience}</p>
+          <p class="mt-4 mb-6 text-muted">{master.specialty}</p>
+          <Button href="#booking" variant="ghost" size="sm" data-master={master.id} class="mt-auto">
+            {ctaLabel} к {master.dative}
+          </Button>
+        </div>
+      </li>
+    ))}
+  </ul>
+</Section>

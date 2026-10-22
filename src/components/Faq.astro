@@ -1,0 +1,24 @@
+---
+import Section from './ui/Section.astro';
+import { sections } from '../data/copy';
+import { faq } from '../data/faq';
+---
+
+<Section id="faq" {...sections.faq}>
+  <div class="max-w-3xl divide-y divide-line border-y border-line">
+    {faq.map((item) => (
+      <details class="group">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-lg font-medium [&::-webkit-details-marker]:hidden">
+          {item.question}
+          <span
+            aria-hidden="true"
+            class="font-display text-3xl leading-none text-accent transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none"
+          >
+            +
+          </span>
+        </summary>
+        <p class="pr-10 pb-6 text-muted">{item.answer}</p>
+      </details>
+    ))}
+  </div>
+</Section>

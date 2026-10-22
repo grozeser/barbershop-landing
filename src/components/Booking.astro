@@ -1,0 +1,30 @@
+---
+import Button from './ui/Button.astro';
+import Section from './ui/Section.astro';
+import { booking, sections } from '../data/copy';
+import { site } from '../data/site';
+---
+
+<Section id="booking" {...sections.booking} class="bg-surface">
+  <div class="grid gap-8 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+    <div>
+      <h3 class="font-display text-2xl font-medium uppercase">{booking.phoneTitle}</h3>
+      <p class="mt-3 text-muted">{booking.phoneText}</p>
+      <a
+        href={site.phoneHref}
+        class="mt-6 inline-block font-display text-3xl font-medium text-accent"
+      >
+        {site.phone}
+      </a>
+      <p class="mt-2 text-sm text-muted">{site.hours.label}</p>
+    </div>
+
+    <!-- Форма записи появится на этапе 4 вместе с логикой, валидацией и тестами -->
+    <div class="flex flex-col items-start gap-6 border border-line bg-bg p-6 md:p-10">
+      <p class="text-lg">Онлайн-запись появится здесь совсем скоро.</p>
+      <Button href={site.phoneHref} variant="ghost">
+        Позвонить
+      </Button>
+    </div>
+  </div>
+</Section>

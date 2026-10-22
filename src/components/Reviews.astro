@@ -1,0 +1,33 @@
+---
+import Badge from './ui/Badge.astro';
+import Section from './ui/Section.astro';
+import { sections } from '../data/copy';
+import { reviews } from '../data/reviews';
+import { formatDate } from '../lib/format';
+---
+
+<Section id="reviews" {...sections.reviews}>
+  <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {reviews.map((review) => (
+      <li>
+        <figure class="flex h-full flex-col gap-4 border border-line bg-surface p-6 md:p-8">
+          <p class="sr-only">Оценка: {review.rating} из 5</p>
+          <p aria-hidden="true" class="tracking-[0.2em] text-accent">
+            {'★'.repeat(review.rating)}
+            <span class="text-line">{'★'.repeat(5 - review.rating)}</span>
+          </p>
+          <blockquote class="flex-1">
+            <p>{review.text}</p>
+          </blockquote>
+          <figcaption class="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span>
+              <span class="font-medium">{review.name}</span>
+              <span class="text-muted">· {formatDate(review.date)}</span>
+            </span>
+            <Badge>{review.service}</Badge>
+          </figcaption>
+        </figure>
+      </li>
+    ))}
+  </ul>
+</Section>

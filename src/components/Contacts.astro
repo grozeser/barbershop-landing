@@ -1,0 +1,79 @@
+---
+import Section from './ui/Section.astro';
+import { contacts, sections } from '../data/copy';
+import { site } from '../data/site';
+---
+
+<Section id="contacts" {...sections.contacts} class="bg-surface">
+  <div class="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
+    <dl class="grid gap-8 sm:grid-cols-2">
+      <div>
+        <dt class="eyebrow">{contacts.address}</dt>
+        <dd class="mt-2 text-lg">
+          {site.city}, {site.address}
+        </dd>
+      </div>
+      <div>
+        <dt class="eyebrow">{contacts.hours}</dt>
+        <dd class="mt-2 text-lg">{site.hours.label}</dd>
+      </div>
+      <div>
+        <dt class="eyebrow">{contacts.phone}</dt>
+        <dd class="mt-2 text-lg">
+          <a href={site.phoneHref}>{site.phone}</a>
+        </dd>
+      </div>
+      <div>
+        <dt class="eyebrow">{contacts.email}</dt>
+        <dd class="mt-2 text-lg">
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </dd>
+      </div>
+      <div>
+        <dt class="eyebrow">{contacts.socials}</dt>
+        <dd class="mt-2 flex gap-6 text-lg">
+          {site.socials.map((social) => (
+            <a href={social.href}>{social.label}</a>
+          ))}
+        </dd>
+      </div>
+    </dl>
+
+    <!-- Адрес вымышленный, поэтому вместо реальной карты рисуем схему -->
+    <svg
+      role="img"
+      aria-label={contacts.map}
+      viewBox="0 0 480 360"
+      class="h-auto w-full border border-line bg-bg"
+    >
+      <path
+        d="M0 320c120-30 200 20 300-10s140-30 180-10"
+        class="fill-none stroke-surface-2"
+        stroke-width="22"
+      ></path>
+      <path
+        d="M0 90h480M0 250h480M120 0v360M340 0v360"
+        class="fill-none stroke-line"
+        stroke-width="12"
+      ></path>
+      <path
+        d="M0 170h480M230 0v360M40 0v360M420 0v360"
+        class="fill-none stroke-line"
+        stroke-width="5"
+      ></path>
+      <text x="16" y="160" class="fill-muted text-[11px] tracking-widest">
+        УЛ. ЛАТУННАЯ
+      </text>
+      <circle cx="285" cy="170" r="26" class="fill-accent/15"></circle>
+      <circle cx="285" cy="170" r="8" class="fill-accent"></circle>
+      <text
+        x="285"
+        y="130"
+        text-anchor="middle"
+        class="fill-fg font-display text-base font-semibold tracking-[0.2em]"
+      >
+        BRASS & BLADE
+      </text>
+    </svg>
+  </div>
+</Section>

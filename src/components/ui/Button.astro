@@ -4,13 +4,22 @@ import type { HTMLAttributes } from 'astro/types';
 type Props = Omit<HTMLAttributes<'button'>, 'type'> & {
   href?: string;
   variant?: 'primary' | 'ghost';
+  size?: 'md' | 'sm';
   type?: 'button' | 'submit';
 };
 
-const { href, variant = 'primary', type = 'button', class: className, ...rest } = Astro.props;
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  type = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
 
 const classes = [
-  'inline-flex min-h-12 items-center justify-center gap-2 px-7 font-display text-sm font-medium tracking-[0.15em] uppercase transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50',
+  size === 'md' ? 'px-7' : 'px-4',
+  'inline-flex min-h-12 items-center justify-center gap-2 font-display text-sm font-medium tracking-[0.15em] uppercase transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50',
   variant === 'primary'
     ? 'bg-accent text-bg hover:bg-accent-soft'
     : 'border border-accent/60 text-fg hover:border-accent hover:text-accent',

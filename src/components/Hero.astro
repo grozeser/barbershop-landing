@@ -1,0 +1,46 @@
+---
+import Button from './ui/Button.astro';
+import Photo from './ui/Photo.astro';
+import { hero } from '../data/copy';
+import { site } from '../data/site';
+---
+
+<section aria-labelledby="hero-title">
+  <div class="mx-auto grid max-w-page items-center gap-12 px-4 py-12 md:px-6 md:py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
+    <div>
+      <p class="eyebrow">{hero.eyebrow}</p>
+      <h1
+        id="hero-title"
+        class="mt-4 font-display text-[clamp(2.75rem,5.5vw,5rem)] leading-[1.1] font-semibold uppercase"
+      >
+        {hero.title}
+      </h1>
+      <p class="mt-6 max-w-xl text-lg text-muted">{hero.lead}</p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <Button href="#booking">{hero.primaryCta}</Button>
+        <Button href="#services" variant="ghost">
+          {hero.secondaryCta}
+        </Button>
+      </div>
+
+      <dl class="mt-12 grid max-w-xl grid-cols-3 gap-4 border-t border-line pt-8 md:gap-6">
+        {site.stats.map((stat) => (
+          <div class="flex flex-col-reverse justify-end gap-1">
+            <dt class="text-sm text-muted">{stat.label}</dt>
+            <dd class="font-display text-2xl font-semibold text-accent md:text-4xl">
+              {stat.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+
+    <div class="relative">
+      <Photo alt="Барбер бреет гостя опасной бритвой" class="aspect-[4/3] lg:aspect-[4/5]" />
+      <div
+        aria-hidden="true"
+        class="pole-stripes absolute top-10 bottom-10 -left-3 hidden w-1.5 lg:block"
+      ></div>
+    </div>
+  </div>
+</section>

@@ -38,6 +38,22 @@ export const sections = {
 
 export const ctaLabel = 'Записаться';
 
+export const header = {
+  skipLink: 'Перейти к содержанию',
+  nav: 'Основное меню',
+  openMenu: 'Открыть меню',
+  closeMenu: 'Закрыть меню',
+};
+
+export const contacts = {
+  address: 'Адрес',
+  hours: 'Часы работы',
+  phone: 'Телефон',
+  email: 'Почта',
+  socials: 'Соцсети',
+  map: `Схема проезда: ${site.address}`,
+};
+
 export const booking = {
   labels: {
     service: 'Услуга',
@@ -49,6 +65,8 @@ export const booking = {
     comment: 'Комментарий',
     consent: 'Соглашаюсь на обработку персональных данных',
   },
+  phoneTitle: 'Удобнее по телефону?',
+  phoneText: 'Позвоните — подберём время и мастера за минуту.',
   optional: 'необязательно',
   anyMaster: 'Любой свободный',
   placeholders: {

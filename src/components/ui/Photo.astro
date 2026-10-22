@@ -1,0 +1,22 @@
+---
+// Заглушка до этапа 5: там сюда придёт <Picture> с настоящим фото, пропорции задаются через class
+interface Props {
+  alt: string;
+  class?: string;
+}
+
+const { alt, class: className } = Astro.props;
+---
+
+<div
+  role="img"
+  aria-label={alt}
+  class:list={[
+    'grid place-items-center bg-surface-2 bg-[repeating-linear-gradient(-45deg,transparent_0_12px,var(--color-surface)_12px_24px)] p-4 text-center',
+    className,
+  ]}
+>
+  <span aria-hidden="true" class="text-xs tracking-wider text-muted uppercase">
+    Фото: {alt}
+  </span>
+</div>

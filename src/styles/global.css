@@ -38,6 +38,14 @@
   }
 }
 
+@utility pole-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-pole) 0 8px,
+    var(--color-fg) 8px 16px
+  );
+}
+
 @utility eyebrow {
   font-family: var(--font-display);
   font-size: var(--text-sm);

@@ -1,0 +1,28 @@
+---
+import Logo from './Logo.astro';
+import { footer } from '../data/copy';
+import { site } from '../data/site';
+---
+
+<footer class="border-t border-line pb-20 md:pb-0">
+  <div class="mx-auto grid max-w-page gap-8 px-4 py-12 md:grid-cols-[1fr_auto] md:px-6">
+    <div>
+      <Logo />
+      <p class="mt-4 max-w-md text-sm text-muted">{footer.disclaimer}</p>
+    </div>
+    <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm md:justify-end">
+      {site.socials.map((social) => (
+        <li>
+          <a href={social.href} class="text-muted transition-colors hover:text-fg">
+            {social.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+  <div class="border-t border-line">
+    <p class="mx-auto max-w-page px-4 py-6 text-xs text-muted md:px-6">
+      © {new Date().getFullYear()} {site.name}
+    </p>
+  </div>
+</footer>

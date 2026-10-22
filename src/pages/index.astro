@@ -1,8 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
-import Badge from '../components/ui/Badge.astro';
-import Button from '../components/ui/Button.astro';
-import { footer, hero } from '../data/copy';
+import Booking from '../components/Booking.astro';
+import Contacts from '../components/Contacts.astro';
+import Faq from '../components/Faq.astro';
+import Features from '../components/Features.astro';
+import Footer from '../components/Footer.astro';
+import Gallery from '../components/Gallery.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Masters from '../components/Masters.astro';
+import MobileCta from '../components/MobileCta.astro';
+import Reviews from '../components/Reviews.astro';
+import Services from '../components/Services.astro';
+import { header } from '../data/copy';
 import { site } from '../data/site';
 ---
 
@@ -10,35 +20,24 @@ import { site } from '../data/site';
   title={`${site.name} — барбершоп в Москве`}
   description="Мужские стрижки, борода и королевское бритьё опасной бритвой. Концепт лендинга для портфолио."
 >
-  <main class="mx-auto flex min-h-dvh max-w-page flex-col justify-center gap-10 px-4 py-16 md:px-6">
-    <div class="flex flex-wrap items-center gap-4">
-      <p class="font-display text-xl font-semibold tracking-[0.2em] uppercase">{site.name}</p>
-      <Badge>Сайт в разработке</Badge>
-    </div>
-
-    <div class="max-w-3xl">
-      <p class="eyebrow">{hero.eyebrow}</p>
-      <h1 class="mt-4 font-display text-[clamp(3rem,10vw,5rem)] leading-[1.1] font-semibold uppercase">
-        {hero.title}
-      </h1>
-      <p class="mt-6 max-w-xl text-lg text-muted">{hero.lead}</p>
-      <div class="mt-8 flex flex-wrap gap-4">
-        <Button href="#booking">{hero.primaryCta}</Button>
-        <Button href="#services" variant="ghost">
-          {hero.secondaryCta}
-        </Button>
-      </div>
-    </div>
-
-    <dl class="grid max-w-3xl grid-cols-3 gap-4 border-t border-line pt-8 md:gap-6">
-      {site.stats.map((stat) => (
-        <div class="flex flex-col-reverse justify-end gap-1">
-          <dt class="text-sm text-muted">{stat.label}</dt>
-          <dd class="font-display text-2xl font-semibold text-accent md:text-4xl">{stat.value}</dd>
-        </div>
-      ))}
-    </dl>
-
-    <p class="text-sm text-muted">{footer.disclaimer}</p>
+  <a
+    href="#main"
+    class="sr-only z-50 bg-accent px-4 py-3 text-bg focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+  >
+    {header.skipLink}
+  </a>
+  <Header />
+  <main id="main">
+    <Hero />
+    <Features />
+    <Services />
+    <Masters />
+    <Gallery />
+    <Reviews />
+    <Booking />
+    <Faq />
+    <Contacts />
   </main>
+  <Footer />
+  <MobileCta />
 </Base>
