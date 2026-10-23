@@ -14,11 +14,43 @@ import Reviews from '../components/Reviews.astro';
 import Services from '../components/Services.astro';
 import { header } from '../data/copy';
 import { site } from '../data/site';
+import { services } from '../data/services';
+import heroImage from '../assets/images/hero.jpg';
+
+const description =
+  'Мужские стрижки, борода и королевское бритьё опасной бритвой. Концепт лендинга для портфолио.';
+const prices = services.map((s) => s.price);
+const pad = (h: number) => `${String(h).padStart(2, '0')}:00`;
+
+// Бизнес вымышленный, поэтому без aggregateRating: выдуманный рейтинг в разметке был бы обманом
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HairSalon',
+  name: site.name,
+  description,
+  telephone: site.phoneHref.replace('tel:', ''),
+  email: site.email,
+  priceRange: `${Math.min(...prices)}–${Math.max(...prices)} RUB`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address,
+    addressLocality: site.city,
+    addressCountry: 'RU',
+  },
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: pad(site.hours.open),
+    closes: pad(site.hours.close),
+  },
+};
 ---
 
 <Base
   title={`${site.name} — барбершоп в Москве`}
-  description="Мужские стрижки, борода и королевское бритьё опасной бритвой. Концепт лендинга для портфолио."
+  description={description}
+  ogImage={heroImage}
+  jsonLd={jsonLd}
 >
   <a
     href="#main"

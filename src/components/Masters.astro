@@ -5,6 +5,7 @@ import Photo from './ui/Photo.astro';
 import Section from './ui/Section.astro';
 import { ctaLabel, sections } from '../data/copy';
 import { masters } from '../data/masters';
+import { image } from '../lib/images';
 ---
 
 <Section id="masters" {...sections.masters}>
@@ -12,7 +13,9 @@ import { masters } from '../data/masters';
     {masters.map((master) => (
       <li class="flex flex-col border border-line bg-surface">
         <Photo
-          alt={`${master.name}, ${master.level.toLowerCase()}`}
+          src={image(`master-${master.id}`)}
+          alt={master.photoAlt}
+          sizes="(min-width: 1024px) 270px, (min-width: 640px) 50vw, 100vw"
           class="aspect-[4/3] sm:aspect-[4/5]"
         />
         <div class="flex flex-1 flex-col p-6">

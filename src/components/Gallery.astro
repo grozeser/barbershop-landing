@@ -3,6 +3,7 @@ import Photo from './ui/Photo.astro';
 import Section from './ui/Section.astro';
 import { gallery, sections } from '../data/copy';
 import { works } from '../data/works';
+import { image } from '../lib/images';
 ---
 
 <Section id="works" {...sections.works} class="bg-surface">
@@ -15,7 +16,12 @@ import { works } from '../data/works';
           aria-label={`${gallery.open}: ${work.alt}`}
           class="block w-full cursor-zoom-in transition-opacity duration-200 hover:opacity-80"
         >
-          <Photo alt={work.alt} class="aspect-[4/5]" />
+          <Photo
+            src={image(work.image)}
+            alt={work.alt}
+            sizes="(min-width: 768px) 33vw, 50vw"
+            class="aspect-[4/5]"
+          />
         </button>
       </li>
     ))}
@@ -54,8 +60,13 @@ import { works } from '../data/works';
   function show(index: number) {
     current = (index + triggers.length) % triggers.length;
     const photo = triggers[current].firstElementChild!.cloneNode(true) as HTMLElement;
+    // в сетке фото маленькое; в просмотре браузер должен выбрать файл крупнее
+    photo.querySelectorAll<HTMLImageElement | HTMLSourceElement>('img, source').forEach((el) => {
+      el.sizes = 'min(90vw, 600px)';
+    });
+    photo.querySelector('img')!.loading = 'eager';
     photoBox.replaceChildren(photo);
-    caption.textContent = `${current + 1} / ${triggers.length} · ${photo.getAttribute('aria-label') ?? ''}`;
+    caption.textContent = `${current + 1} / ${triggers.length} · ${photo.querySelector('img')!.alt}`;
   }
 
   triggers.forEach((trigger, index) =>

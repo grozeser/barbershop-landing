@@ -3,6 +3,7 @@ import Button from './ui/Button.astro';
 import Photo from './ui/Photo.astro';
 import { hero } from '../data/copy';
 import { site } from '../data/site';
+import heroImage from '../assets/images/hero.jpg';
 ---
 
 <section id="hero" aria-labelledby="hero-title">
@@ -36,7 +37,13 @@ import { site } from '../data/site';
     </div>
 
     <div class="relative">
-      <Photo alt="Барбер бреет гостя опасной бритвой" class="aspect-[4/3] lg:aspect-[4/5]" />
+      <Photo
+        src={heroImage}
+        alt="Барбер бреет гостю бороду опасной бритвой"
+        sizes="(min-width: 1024px) 480px, calc(100vw - 32px)"
+        priority
+        class="aspect-[4/3] lg:aspect-[4/5]"
+      />
       <div
         aria-hidden="true"
         class="pole-stripes absolute top-10 bottom-10 -left-3 hidden w-1.5 lg:block"
