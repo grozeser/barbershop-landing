@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Тесты идут по собранному сайту (astro preview), поэтому перед ними нужен npm run build
-const url = 'http://127.0.0.1:4331/barbershop-landing/';
+// По умолчанию тесты идут по собранному сайту (astro preview), поэтому перед ними нужен npm run build.
+// BASE_URL=https://grozeser.github.io/barbershop-landing/ — смоук-тест живого сайта после деплоя
+const local = 'http://127.0.0.1:4331/barbershop-landing/';
+const url = process.env.BASE_URL ?? local;
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -20,9 +22,11 @@ export default defineConfig({
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
-  webServer: {
-    command: 'npx astro preview --port 4331 --host 127.0.0.1',
-    url,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: 'npx astro preview --port 4331 --host 127.0.0.1',
+        url: local,
+        reuseExistingServer: !process.env.CI,
+      },
 });
