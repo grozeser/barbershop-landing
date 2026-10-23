@@ -9,6 +9,8 @@ export default defineConfig({
   base: '/barbershop-landing',
   // без фильтра в карту попадает и /barbershop-landing, и /barbershop-landing/ — оставляем канонический
   integrations: [sitemap({ filter: (page) => page.endsWith('/') })],
+  // страница одна, отдельный CSS-файл только задерживает первую отрисовку (Lighthouse: render-blocking)
+  build: { inlineStylesheets: 'always' },
   vite: {
     plugins: [tailwindcss()],
   },

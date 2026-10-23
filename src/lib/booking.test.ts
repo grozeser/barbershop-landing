@@ -4,6 +4,7 @@ import {
   formatPhoneInput,
   getSlots,
   isDateInRange,
+  maskPhone,
   normalizePhone,
   validate,
 } from './booking';
@@ -81,6 +82,34 @@ describe('phone', () => {
     expect(formatPhoneInput('+7 (999) 123-45-678')).toBe('+7 (999) 123-45-67');
     expect(formatPhoneInput('89991234567')).toBe('+7 (999) 123-45-67');
     expect(formatPhoneInput('+7 999 123 45 67')).toBe('+7 (999) 123-45-67');
+  });
+
+  it('не принимает номера, которых не бывает в зоне +7', () => {
+    expect(normalizePhone('+7 (000) 000-00-00')).toBeNull();
+    expect(normalizePhone('+7 (199) 123-45-67')).toBeNull();
+    expect(normalizePhone('+7 (701) 123-45-67')).toBe('7011234567'); // Казахстан
+  });
+
+  it('Backspace по скобке стирает цифру слева от курсора, а не последнюю', () => {
+    // было «+7 (812) 123-45-67», курсор за «)», браузер стёр скобку
+    expect(maskPhone('+7 (812 123-45-67', 7, true)).toEqual({
+      value: '+7 (811) 234-56-7',
+      caret: 6,
+    });
+  });
+
+  it('Backspace по «(» не стирает код страны', () => {
+    expect(maskPhone('+7 812) 123-45-67', 3, true)).toEqual({
+      value: '+7 (812) 123-45-67',
+      caret: 4,
+    });
+  });
+
+  it('при вставке цифры в середину курсор остаётся за ней', () => {
+    // курсор был после «81», ввели 9
+    expect(maskPhone('+7 (8192) 123-45-67', 7)).toEqual({ value: '+7 (819) 212-34-56', caret: 7 });
+    expect(maskPhone('9', 1)).toEqual({ value: '+7 (9', caret: 5 });
+    expect(maskPhone('89991234567', 11)).toEqual({ value: '+7 (999) 123-45-67', caret: 18 });
   });
 
   it('не принимает первую 8 или 7 за код страны при вводе по цифре', () => {

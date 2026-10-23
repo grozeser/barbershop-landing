@@ -10,11 +10,7 @@ interface Props {
 const { id, eyebrow, title, lead, class: className } = Astro.props;
 ---
 
-<section
-  id={id}
-  aria-labelledby={`${id}-title`}
-  class:list={['scroll-mt-20 py-20 md:py-28', className]}
->
+<section id={id} aria-labelledby={`${id}-title`} class:list={['py-20 md:py-28', className]}>
   <div class="mx-auto max-w-page px-4 md:px-6">
     <header data-reveal class="mb-12 max-w-2xl md:mb-16">
       <p class="eyebrow">{eyebrow}</p>

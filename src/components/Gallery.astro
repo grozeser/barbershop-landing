@@ -35,7 +35,7 @@ import { image } from '../lib/images';
 >
   <div class="flex flex-col items-center gap-4 p-4">
     <div id="lightbox-photo" class="w-[min(90vw,calc(75dvh*0.8))]"></div>
-    <p id="lightbox-caption" class="text-center text-sm text-muted"></p>
+    <p id="lightbox-caption" aria-live="polite" class="text-center text-sm text-muted"></p>
     <div class="flex gap-2">
       <button type="button" data-step="-1" aria-label={gallery.prev} class="chip w-12">
         ←

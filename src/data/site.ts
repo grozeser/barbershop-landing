@@ -1,3 +1,5 @@
+import { formatHour } from '../lib/format';
+
 // Бизнес вымышленный: улица выдумана, телефон заведомо нерабочий, почта на зарезервированном домене .example
 const open = 10;
 const close = 22;
@@ -9,12 +11,9 @@ export const site = {
   phone: '+7 (495) 000-00-00',
   phoneHref: 'tel:+74950000000',
   email: 'hello@brass-blade.example',
-  hours: { open, close, label: `Ежедневно, ${open}:00–${close}:00` },
-  // shortcut: ссылки-заглушки, заменить на реальные профили, если бизнес появится
-  socials: [
-    { label: 'Telegram', href: '#' },
-    { label: 'ВКонтакте', href: '#' },
-  ],
+  hours: { open, close, label: `Ежедневно, ${formatHour(open)}–${formatHour(close)}` },
+  // shortcut: профилей нет, поэтому выводим текстом, а не ссылками в никуда; появятся — добавить href
+  socials: ['Telegram', 'ВКонтакте'],
   nav: [
     { label: 'Услуги', href: '#services' },
     { label: 'Мастера', href: '#masters' },

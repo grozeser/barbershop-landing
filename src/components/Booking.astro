@@ -71,7 +71,7 @@ import { formatPrice } from '../lib/format';
 
         <fieldset id="time" aria-describedby="time-hint time-error" class="md:col-span-2">
           <legend class="mb-2 text-sm font-medium">{booking.labels.time}</legend>
-          <p id="time-hint" class="text-sm text-muted empty:hidden">
+          <p id="time-hint" aria-live="polite" class="text-sm text-muted empty:hidden">
             {booking.timeHint}
           </p>
           <div
@@ -157,7 +157,7 @@ import { formatPrice } from '../lib/format';
   import { masters } from '../data/masters';
   import { services } from '../data/services';
   import { site } from '../data/site';
-  import { dateRange, formatPhoneInput, getSlots, validate, type FieldKey } from '../lib/booking';
+  import { dateRange, getSlots, maskPhone, validate, type FieldKey } from '../lib/booking';
   import { formatDate } from '../lib/format';
 
   const byId = <T extends HTMLElement = HTMLElement>(id: string) =>
@@ -171,8 +171,6 @@ import { formatPrice } from '../lib/format';
   const name = byId<HTMLInputElement>('name');
   const phone = byId<HTMLInputElement>('phone');
   const consent = byId<HTMLInputElement>('consent');
-
-  Object.assign(date, dateRange(new Date()));
 
   const checked = (group: string) =>
     form.querySelector<HTMLInputElement>(`input[name="${group}"]:checked`)?.value ?? '';
@@ -239,8 +237,9 @@ import { formatPrice } from '../lib/format';
 
   function focusField(key: FieldKey) {
     if (key !== 'time') return inputs[key].focus();
+    // время — первая ошибка, значит услуга и дата верны; нет свободных слотов — пусть меняют дату
     const firstFree = slotsBox.querySelector<HTMLInputElement>('input:not(:disabled)');
-    (firstFree ?? (date.value ? service : date)).focus();
+    (firstFree ?? date).focus();
   }
 
   let submitted = false;
@@ -258,21 +257,30 @@ import { formatPrice } from '../lib/format';
 
   let phoneDigits = '';
   phone.addEventListener('input', (event) => {
-    let value = phone.value;
-    // стёрли скобку или дефис — цифры не изменились, и маска вернула бы символ; стираем цифру перед ним
-    if (
+    // цифры не изменились после Backspace — значит, стёрли скобку или дефис
+    const erasedMask =
       (event as InputEvent).inputType === 'deleteContentBackward' &&
-      value.replace(/\D/g, '') === phoneDigits
-    ) {
-      value = value.replace(/\d(?=\D*$)/, '');
-    }
-    phone.value = formatPhoneInput(value);
-    phoneDigits = phone.value.replace(/\D/g, '');
+      phone.value.replace(/\D/g, '') === phoneDigits;
+    const { value, caret } = maskPhone(
+      phone.value,
+      phone.selectionStart ?? phone.value.length,
+      erasedMask,
+    );
+    phone.value = value;
+    phone.setSelectionRange(caret, caret);
+    phoneDigits = value.replace(/\D/g, '');
   });
+
+  // страница может быть открыта долго: «сегодня» и прошедшие слоты пересчитываем от текущего времени
+  const refreshDates = () => Object.assign(date, dateRange(new Date()));
+  refreshDates();
+  date.addEventListener('focus', refreshDates);
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     submitted = true;
+    refreshDates();
+    renderSlots(); // если выбранное время уже прошло, выбор сбросится и сработает ошибка
     const now = new Date();
     const values = fields();
     const errors = validate(values, now);

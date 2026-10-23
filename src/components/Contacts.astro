@@ -31,11 +31,7 @@ import { site } from '../data/site';
       </div>
       <div>
         <dt class="eyebrow">{contacts.socials}</dt>
-        <dd class="mt-2 flex gap-6 text-lg">
-          {site.socials.map((social) => (
-            <a href={social.href}>{social.label}</a>
-          ))}
-        </dd>
+        <dd class="mt-2 text-lg">{site.socials.join(' · ')}</dd>
       </div>
     </dl>
 

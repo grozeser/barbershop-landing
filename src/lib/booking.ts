@@ -62,20 +62,21 @@ export function getSlots({ date, duration, masterIds, now, open, close }: SlotQu
   return slots;
 }
 
-/** 10 цифр после +7 или null */
+/** 10 цифр после +7 или null. Номера в зоне +7 начинаются с 3, 4, 7, 8 или 9 */
 export function normalizePhone(input: string) {
   let digits = input.replace(/\D/g, '');
   if (digits.length === 11 && (digits[0] === '7' || digits[0] === '8')) digits = digits.slice(1);
-  return digits.length === 10 ? digits : null;
+  return /^[34789]\d{9}$/.test(digits) ? digits : null;
 }
+
+// код страны отбрасываем, только если он точно есть: иначе код 812 потерял бы восьмёрку
+const hasCountryCode = (input: string, digits: string) =>
+  input.trimStart().startsWith('+7') || (digits.length === 11 && /^[78]/.test(digits));
 
 /** Маска «+7 (999) 123-45-67», которая растёт по мере ввода */
 export function formatPhoneInput(input: string) {
   let digits = input.replace(/\D/g, '');
-  // код страны отбрасываем, только если он точно есть: иначе код 812 потерял бы восьмёрку
-  if (input.trimStart().startsWith('+7') || (digits.length === 11 && /^[78]/.test(digits))) {
-    digits = digits.slice(1);
-  }
+  if (hasCountryCode(input, digits)) digits = digits.slice(1);
   digits = digits.slice(0, 10);
   if (!digits) return '';
   const parts = [digits.slice(0, 3), digits.slice(3, 6), digits.slice(6, 8), digits.slice(8, 10)];
@@ -84,6 +85,32 @@ export function formatPhoneInput(input: string) {
   if (parts[2]) out += `-${parts[2]}`;
   if (parts[3]) out += `-${parts[3]}`;
   return out;
+}
+
+/**
+ * Применяет маску после правки поля и говорит, где поставить курсор, чтобы он остался
+ * за той же цифрой. eraseBeforeCaret — Backspace стёр скобку или дефис: тогда стираем
+ * ближайшую цифру слева, иначе маска просто вернула бы символ на место.
+ */
+export function maskPhone(raw: string, caret: number, eraseBeforeCaret = false) {
+  let text = raw;
+  let pos = caret;
+  if (eraseBeforeCaret) {
+    const i = text.slice(0, pos).search(/\d\D*$/);
+    const isCountryCode = text.trimStart().startsWith('+7') && i === text.indexOf('7');
+    if (i >= 0 && !isCountryCode) {
+      text = text.slice(0, i) + text.slice(i + 1);
+      pos = i;
+    }
+  }
+  const value = formatPhoneInput(text);
+  const digits = text.replace(/\D/g, '');
+  const digitsBefore = text.slice(0, pos).replace(/\D/g, '').length;
+  const n = Math.max(0, digitsBefore - (hasCountryCode(text, digits) ? 1 : 0));
+  // позиции цифр номера в маске; цифра с индексом 1 — код страны 7
+  const positions = [...value].flatMap((ch, i) => (i > 1 && /\d/.test(ch) ? [i] : []));
+  const caretOut = n === 0 ? Math.min(4, value.length) : (positions[n - 1] ?? value.length - 1) + 1;
+  return { value, caret: caretOut };
 }
 
 export interface BookingFields {

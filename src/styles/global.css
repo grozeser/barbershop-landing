@@ -6,6 +6,8 @@
   --color-surface: #1a1a1a;
   --color-surface-2: #242424;
   --color-line: #2e2e2e;
+  /* рамки полей и чипов: WCAG 1.4.11 требует 3:1 к фону, line даёт только 1.4:1 */
+  --color-control: #6b6560;
   --color-fg: #f2ede4;
   --color-muted: #a8a29a;
   --color-accent: #c8a165;
@@ -24,6 +26,15 @@
     color-scheme: dark;
     background-color: var(--color-bg);
     color: var(--color-fg);
+    /* липкая шапка не должна закрывать заголовок по якорю и элемент в фокусе (WCAG 2.4.11) */
+    scroll-padding-top: 5rem;
+  }
+
+  /* на телефоне снизу висит плавающая кнопка записи */
+  @media (width < 48rem) {
+    html {
+      scroll-padding-bottom: 5rem;
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -61,7 +72,7 @@
   width: 100%;
   min-height: 3rem;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--color-line);
+  border: 1px solid var(--color-control);
   background-color: var(--color-surface-2);
   color: var(--color-fg);
 
@@ -80,7 +91,7 @@
   align-items: center;
   justify-content: center;
   padding-inline: 1rem;
-  border: 1px solid var(--color-line);
+  border: 1px solid var(--color-control);
   cursor: pointer;
   transition:
     border-color 200ms,

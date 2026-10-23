@@ -15,12 +15,12 @@ import Services from '../components/Services.astro';
 import { header } from '../data/copy';
 import { site } from '../data/site';
 import { services } from '../data/services';
+import { formatHour } from '../lib/format';
 import heroImage from '../assets/images/hero.jpg';
 
 const description =
   'Мужские стрижки, борода и королевское бритьё опасной бритвой. Концепт лендинга для портфолио.';
 const prices = services.map((s) => s.price);
-const pad = (h: number) => `${String(h).padStart(2, '0')}:00`;
 
 // Бизнес вымышленный, поэтому без aggregateRating: выдуманный рейтинг в разметке был бы обманом
 const jsonLd = {
@@ -40,8 +40,8 @@ const jsonLd = {
   openingHoursSpecification: {
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-    opens: pad(site.hours.open),
-    closes: pad(site.hours.close),
+    opens: formatHour(site.hours.open),
+    closes: formatHour(site.hours.close),
   },
 };
 ---
